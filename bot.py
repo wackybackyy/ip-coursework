@@ -2,7 +2,7 @@ import os, json
 import numpy as np
 from PIL import Image
 from dotenv import load_dotenv
-import os
+import io
 
 import joblib
 import torch
@@ -13,11 +13,6 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 
 load_dotenv()
-
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-
-if TOKEN is None:
-    raise RuntimeError("TELEGRAM_TOKEN not set")
 
 class SimpleCNN(nn.Module):
     def __init__(self, n_classes):
@@ -132,7 +127,9 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    token = "8309616126:AAGLseyUu3Ld39Q-a5dH8GkPmEpnpHrWD0Q"
+    token = os.getenv("TELEGRAM_TOKEN")
+    if not token:
+        raise RuntimeError("Set TELEGRAM_TOKEN env var (or put it in .env).")
 
     app = Application.builder().token(token).build()
     app.add_handler(CommandHandler("start", start))
